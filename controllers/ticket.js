@@ -39,7 +39,7 @@ const openTicket = async function (message, user) {
             VIEW_CHANNEL: false,
             SEND_MESSAGES: false
         })
-        c.overwritePermissions(message.member, {
+        c.overwritePermissions(user.id, {
             VIEW_CHANNEL: true,
             SEND_MESSAGES: true
         })
