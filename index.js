@@ -97,7 +97,7 @@ client.once('ready', () => {
       .setAuthor(`${client.user.username}`, client.user.avatarURL)
       .setColor(config.colour)
       .setDescription(`React with ${config.reactionEmoji} to create a support ticket`)
-      .setFooter('${config.name} | Support');
+      .setFooter(`${config.name} | Support`);
 
     const supportChannel = client.channels.get(config.supportChannel);
 
