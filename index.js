@@ -1,40 +1,8 @@
 /**
 ###############################################################################################
- ____                                        _     _____              _             _
-|  _ \  (_)  ___    ___    ___    _ __    __| |   |_   _| (_)   ___  | | __   ___  | |_   ___
-| | | | | | / __|  / __|  / _ \  | '__|  / _` |     | |   | |  / __| | |/ /  / _ \ | __| / __|
-| |_| | | | \__ \ | (__  | (_) | | |    | (_| |     | |   | | | (__  |   <  |  __/ | |_  \__ \
-|____/  |_| |___/  \___|  \___/  |_|     \__,_|     |_|   |_|  \___| |_|\_\  \___|  \__| |___/
-
-===============================================================================================
-
----------------------
-   Discord Tickets
----------------------
-
-  A bot created by Eartharoid for the Discord (TM) platform. [GNU-GPLv3.0]
-
-  > The bot manages user-created support tickets to allow your support team to provide quicker
-    and better assistance to your community members.
-
----------------------
-     Quick Start
----------------------
-
-  > For detailed instructions, visit the github repository and read the documentation.
-
-  > Assuming you have created discord application, edit 'config.json' to allow the bot to
-    function correctly.
-
-  > You will need your bot token (keep it a secret) and channel & role IDs from your server
-
-  > It is recommended that you do not change much / anything in any of the .js files unless
-    you know what you are doing, to prevent critical errors from occuring.
-
-===============================================================================================
 
   > For support, visit https://github.com/eartharoid/DiscordTickets/#readme
-  > My website: https://eartharoid.ml
+  > Author's website: https://eartharoid.ml
 
   @name DiscordTickets
   @author Eartharoid <eartharoid@gmail.com>
@@ -58,34 +26,14 @@ const now = Date.now();
 let trigger = null;
 
 const commands = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-console.log(log.colour.magentaBright(`
-########  ####  ######   ######   #######  ########  ########
-##     ##  ##  ##    ## ##    ## ##     ## ##     ## ##     ##
-##     ##  ##  ##       ##       ##     ## ##     ## ##     ##
-##     ##  ##   ######  ##       ##     ## ########  ##     ##
-##     ##  ##        ## ##       ##     ## ##   ##   ##     ##
-##     ##  ##  ##    ## ##    ## ##     ## ##    ##  ##     ##
-########  ####  ######   ######   #######  ##     ## ########
-
-######## ####  ######  ##    ## ######## ########  ######
-   ##     ##  ##    ## ##   ##  ##          ##    ##    ##
-   ##     ##  ##       ##  ##   ##          ##    ##
-   ##     ##  ##       #####    ######      ##     ######
-   ##     ##  ##       ##  ##   ##          ##          ##
-   ##     ##  ##    ## ##   ##  ##          ##    ##    ##
-   ##    ####  ######  ##    ## ########    ##     ######
-
-  `)); // banner appears in console
-console.log(log.colour.yellow(leeks.styles.bold(`DiscordTickets v${version} - Made By Eartharoid`)));
-console.log(log.colour.yellow(leeks.styles.bold(homepage)));
-console.log('\n\n');
-console.log(log.colour.bgGrey(log.colour.grey(`\n\n==========================================================================\n\n`)))
-console.log('\n\n');
 log.init('DiscordTickets (bot created by Eartharoid)')
-// all log.* functions are logged to ./log/file.log from here onwards
 log.info(`Starting up...`)
 
-client.once('ready', () => { // after bot has logged in
+
+/**
+ * After the bot logged in
+ */
+client.once('ready', () => {
 
   log.info(`Initialising bot...`)
   for (const file of commands) {
@@ -96,7 +44,6 @@ client.once('ready', () => { // after bot has logged in
   log.success(`Connected to Discord API`)
   log.success(`Logged in as ${client.user.tag}`)
   client.user.setPresence({game: {name: config.playing, type: config.activityType},status: config.status})
-    // .then(log.basic)
     .catch(log.error);
 
   if (config.useEmbeds) {
@@ -104,7 +51,7 @@ client.once('ready', () => { // after bot has logged in
       .setAuthor(`${client.user.username} / Ticket Log`, client.user.avatarURL)
       .setColor("#2ECC71")
       .setDescription(":white_check_mark: **Started succesfully**")
-      .setFooter(`Twickd Software`);
+      .setFooter(`${config.name} | Support`);
     client.channels.get(config.logChannel).send(embed)
   } else {
     client.channels.get(config.logChannel).send(":white_check_mark: **Started succesfully**")
@@ -120,7 +67,7 @@ client.once('ready', () => { // after bot has logged in
         .setAuthor(`${client.user.username} / Ticket Log`, client.user.avatarURL)
         .setColor("#2ECC71")
         .setDescription(":white_check_mark: **Required permissions have been granted**")
-        .setFooter(`Twickd Software`);
+        .setFooter(`${config.name} | Support`);
       client.channels.get(config.logChannel).send(embed)
     } else {
       client.channels.get(config.logChannel).send(":white_check_mark: **Started succesfully**")
@@ -133,7 +80,7 @@ client.once('ready', () => { // after bot has logged in
         .setAuthor(`${client.user.username} / Ticket Log`, client.user.avatarURL)
         .setColor("#E74C3C")
         .setDescription(":x: **Required permissions have not been granted**\nPlease give the bot the `ADMINISTRATOR` permission")
-        .setFooter(`Twickd Software`);
+        .setFooter(`${config.name} | Support`);
       client.channels.get(config.logChannel).send({
         embed
       })
@@ -150,7 +97,7 @@ client.once('ready', () => { // after bot has logged in
       .setAuthor(`${client.user.username}`, client.user.avatarURL)
       .setColor(config.colour)
       .setDescription(`React with ${config.reactionEmoji} to create a support ticket`)
-      .setFooter('Twickd Software');
+      .setFooter('${config.name} | Support');
 
     const supportChannel = client.channels.get(config.supportChannel);
 
@@ -192,11 +139,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
  * Message Analyse
  */
 client.on('message', async message => {
-  // if (!message.content.startsWith(config.prefix) || message.author.bot) return;
   if (message.author.bot) return;
   if (message.channel.type === "dm") {
     if (message.author.id === client.user.id) return;
-    // message.channel.send(`Sorry, commands can only be used on the server.`)
     if (config.logDMs) {
       if (config.useEmbeds) {
         const embed = new Discord.RichEmbed()
@@ -204,7 +149,7 @@ client.on('message', async message => {
           .setTitle("DM Logger")
           .addField("Username", message.author.tag, true)
           .addField("Message", message.content, true)
-          .setFooter(`Twickd Software`);
+          .setFooter(`${config.name} | Support`);
         client.channels.get(config.logChannel).send(embed)
       } else {
         client.channels.get(config.logChannel).send(`DM received from **${message.author.tag} (${message.author.id})** : \n\n\`\`\`${message.content}\`\`\``);
@@ -216,16 +161,11 @@ client.on('message', async message => {
   }
   if (message.channel.bot) return;
 
-  // const args = message.content.slice(config.prefix.length).split(/ +/);
-
-
   const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|\\${config.prefix})\\s*`);
   if (!prefixRegex.test(message.content)) return;
   const [, matchedPrefix] = message.content.match(prefixRegex);
   const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
-  // if (!client.commands.has(commandName)) return;
-  // const command = client.commands.get(commandName);
   const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
@@ -236,13 +176,6 @@ client.on('message', async message => {
   }
 
   if (command.args && !args.length) {
-    // let reply = `:x: **Arguments were expected but none were provided.**`;
-    //
-    // if (command.usage) {
-    //   reply += `\n**Usage:** \`${config.prefix}${command.name} ${command.usage}\``;
-    // }
-    //
-    // return message.channel.send(reply);
     if (config.useEmbeds) {
         const embed = new Discord.RichEmbed()
           .setColor("#E74C3C")
@@ -283,20 +216,7 @@ client.on('message', async message => {
 
 
   try {
-    // client.commands.get(command).execute(message, args, config);
     command.execute(message, args);
-    if(config.useEmbeds) {
-      const embed = new Discord.RichEmbed()
-        .setAuthor(`${client.user.username} / Command Log`, client.user.avatarURL)
-        .setTitle("Command Used")
-        .addField("Username", message.author, true)
-        .addField("Command", command.name, true)
-        .setFooter(`DiscordTickets`)
-        .setTimestamp();
-      // client.channels.get(config.logChannel).send({embed})
-    } else {
-      // client.channels.get(config.logChannel).send(`**${message.author.tag} (${message.author.id})** used the \`${command.name}\` command`);
-    }
     log.console(`${message.author.tag} used the '${command.name}' command`)
   } catch (error) {
     log.error(error);
@@ -305,6 +225,10 @@ client.on('message', async message => {
   }
 
 });
+
+/**
+ * Error catching
+ */
 client.on('error', error => {
   log.warn(`Potential error detected\n(likely Discord API connection issue)\n`);
   log.error(`Client error:\n${error}`);
@@ -322,4 +246,7 @@ process.on('beforeExit', (code) => {
   log.basic(`Exiting (${code})`);
 });
 
+/**
+ * Bot login
+ */
 client.login(config.token);

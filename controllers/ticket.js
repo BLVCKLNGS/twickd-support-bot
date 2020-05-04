@@ -31,7 +31,6 @@ const openTicket = async function (message, user) {
         type: 'text'
     }).then(async c => {
         c.setParent(config.ticketsCat);
-        // let supportRole = message.guild.roles.find(`id`, config.supportRole)
         let supportRole = message.guild.roles.get(config.supportRole)
         if (!supportRole) return message.channel.send(":x: No **Support Team** role found.");
 
@@ -69,15 +68,11 @@ const openTicket = async function (message, user) {
 
 
         if (config.useEmbeds) {
-            // message.channel.send(created)
             let w = await c.send(welcome)
             await w.pin();
-            // c.fetchMessage(c.lastMessageID).delete()
         } else {
-            // message.channel.send(`Your ticket (${c}) has been created.\nPlease read the information sent and follow any instructions given.`)
             let w = await c.send(`**Ticket:**\n\n${config.ticketText}`)
             await w.pin()
-            // c.fetchMessage(c.lastMessageID).delete()
 
         }
     })

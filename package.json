@@ -9,21 +9,22 @@
   },
   "devDependencies": {},
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eartharoid/DiscordTickets.git"
+    "url": "git+https://github.com/BLVCKLNGS/twickd-support-bot.git"
   },
   "keywords": [
     "discord",
     "bot",
     "tickets"
   ],
-  "author": "Eartharoid",
+  "author": "BLVCKLNGS",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/eartharoid/DiscordTickets/issues"
+    "url": "https://github.com/BLVCKLNGS/twickd-support-bot/issues"
   },
-  "homepage": "https://github.com/eartharoid/DiscordTickets"
+  "homepage": "https://github.com/BLVCKLNGS/twickd-support-bot"
 }
