@@ -24,7 +24,7 @@ module.exports = {
 		// 	special: false,
 		// });
 		let id = message.author.id.toString().substr(0, 4) + message.author.discriminator;
-		let chan = `ticket-${id}`;
+		let chan = `ticket-${message.author.username}-${id}`;
 
 		if (message.guild.channels.find(channel => channel.name === chan)) {
 			if (config.useEmbeds) {
@@ -38,7 +38,7 @@ module.exports = {
 
 		};
 
-		message.guild.createChannel(`ticket-${id}`, {
+		message.guild.createChannel(chan, {
 			type: 'text'
 		}).then(async c => {
 			c.setParent(config.ticketsCat);
@@ -84,12 +84,12 @@ module.exports = {
 
 
 			if (config.useEmbeds) {
-				message.channel.send(created)
+				// message.channel.send(created)
 				let w = await c.send(welcome)
 				await w.pin();
 				// c.fetchMessage(c.lastMessageID).delete()
 			} else {
-				message.channel.send(`Your ticket (${c}) has been created.\nPlease read the information sent and follow any instructions given.`)
+				// message.channel.send(`Your ticket (${c}) has been created.\nPlease read the information sent and follow any instructions given.`)
 				let w = await c.send(`**Ticket topic:** \`${topic}\`\n\n${config.ticketText}`)
 				await w.pin()
 				// c.fetchMessage(c.lastMessageID).delete()
@@ -104,15 +104,13 @@ module.exports = {
 					.setDescription(`\`${topic}\``)
 					.addField("Username", message.author, true)
 					.addField("Channel", c, true)
-					.setFooter(`DiscordTickets`)
+					.setFooter(`Twickd Software`)
 					.setTimestamp();
-				client.channels.get(config.logChannel).send({
-					embed
-				})
+				// client.channels.get(config.logChannel).send({ embed })
 			} else {
 				client.channels.get(config.logChannel).send(`New ticket created by **${message.author.tag} (${message.author.id})**`);
 			}
-			log.info(`${message.author.tag} created a new ticket (#ticket-${id})`)
+			// log.info(`${message.author.tag} created a new ticket (#ticket-${id})`)
 		})
 
 

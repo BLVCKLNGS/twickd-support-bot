@@ -49,10 +49,13 @@ const leeks = require('leeks.js');
 const log = require(`leekslazylogger`);
 const config = require('./config.json');
 const { version, homepage } = require('./package.json');
+const { openTicket, closeTicket } = require('./controllers/ticket.js')
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
 const now = Date.now();
+
+let trigger = null;
 
 const commands = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 console.log(log.colour.magentaBright(`
@@ -101,7 +104,7 @@ client.once('ready', () => { // after bot has logged in
       .setAuthor(`${client.user.username} / Ticket Log`, client.user.avatarURL)
       .setColor("#2ECC71")
       .setDescription(":white_check_mark: **Started succesfully**")
-      .setFooter(`DiscordTickets by Eartharoid`);
+      .setFooter(`Twickd Software`);
     client.channels.get(config.logChannel).send(embed)
   } else {
     client.channels.get(config.logChannel).send(":white_check_mark: **Started succesfully**")
@@ -117,7 +120,7 @@ client.once('ready', () => { // after bot has logged in
         .setAuthor(`${client.user.username} / Ticket Log`, client.user.avatarURL)
         .setColor("#2ECC71")
         .setDescription(":white_check_mark: **Required permissions have been granted**")
-        .setFooter(`DiscordTickets by Eartharoid`);
+        .setFooter(`Twickd Software`);
       client.channels.get(config.logChannel).send(embed)
     } else {
       client.channels.get(config.logChannel).send(":white_check_mark: **Started succesfully**")
@@ -130,7 +133,7 @@ client.once('ready', () => { // after bot has logged in
         .setAuthor(`${client.user.username} / Ticket Log`, client.user.avatarURL)
         .setColor("#E74C3C")
         .setDescription(":x: **Required permissions have not been granted**\nPlease give the bot the `ADMINISTRATOR` permission")
-        .setFooter(`DiscordTickets by Eartharoid`);
+        .setFooter(`Twickd Software`);
       client.channels.get(config.logChannel).send({
         embed
       })
@@ -139,8 +142,55 @@ client.once('ready', () => { // after bot has logged in
     }
   }
 
+  /**
+   * Send trigger message on #Support channel
+   */
+  if (config.useEmbeds) {
+    const embed = new Discord.RichEmbed()
+      .setAuthor(`${client.user.username}`, client.user.avatarURL)
+      .setColor(config.colour)
+      .setDescription(`React with ${config.reactionEmoji} to create a support ticket`)
+      .setFooter('Twickd Software');
+
+    const supportChannel = client.channels.get(config.supportChannel);
+
+    supportChannel.bulkDelete(10);
+
+    supportChannel.send(embed)
+      .then((message) => {
+        message.react(config.reactionEmoji)
+        .catch((err) => console.error("Failed to react"))
+
+        trigger = message.id;
+      })
+      .catch((err) => console.error(`Message was not send: ${err}`))
+  } 
+  else {
+    supportChannel.send(`React with ${config.reactionEmoji} to create a support ticket`)
+      .then((message) => {
+      })
+      .catch((err) => console.error(`Message was not send: ${err}`));
+  }
+
 });
 
+
+/**
+ * Listening for reaction
+ */
+client.on('messageReactionAdd', async (reaction, user) => {
+  if (trigger != null) {
+    if (reaction.message.id === trigger && user.id !== client.user.id && reaction.emoji.name === config.reactionEmoji) {
+      openTicket(reaction.message, user);
+    }
+  }
+})
+
+
+
+/**
+ * Message Analyse
+ */
 client.on('message', async message => {
   // if (!message.content.startsWith(config.prefix) || message.author.bot) return;
   if (message.author.bot) return;
@@ -154,7 +204,7 @@ client.on('message', async message => {
           .setTitle("DM Logger")
           .addField("Username", message.author.tag, true)
           .addField("Message", message.content, true)
-          .setFooter(`DiscordTickets by Eartharoid`);
+          .setFooter(`Twickd Software`);
         client.channels.get(config.logChannel).send(embed)
       } else {
         client.channels.get(config.logChannel).send(`DM received from **${message.author.tag} (${message.author.id})** : \n\n\`\`\`${message.content}\`\`\``);
@@ -243,9 +293,9 @@ client.on('message', async message => {
         .addField("Command", command.name, true)
         .setFooter(`DiscordTickets`)
         .setTimestamp();
-      client.channels.get(config.logChannel).send({embed})
+      // client.channels.get(config.logChannel).send({embed})
     } else {
-      client.channels.get(config.logChannel).send(`**${message.author.tag} (${message.author.id})** used the \`${command.name}\` command`);
+      // client.channels.get(config.logChannel).send(`**${message.author.tag} (${message.author.id})** used the \`${command.name}\` command`);
     }
     log.console(`${message.author.tag} used the '${command.name}' command`)
   } catch (error) {
